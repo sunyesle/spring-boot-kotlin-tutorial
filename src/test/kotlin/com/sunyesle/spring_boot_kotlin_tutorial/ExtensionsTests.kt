@@ -1,7 +1,5 @@
 package com.sunyesle.spring_boot_kotlin_tutorial
 
-import com.sunyesle.spring_boot_kotlin_tutorial.blog.format
-import com.sunyesle.spring_boot_kotlin_tutorial.blog.toSlug
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 

@@ -1,4 +1,4 @@
-package com.sunyesle.spring_boot_kotlin_tutorial.blog
+package com.sunyesle.spring_boot_kotlin_tutorial
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatterBuilder
