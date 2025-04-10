@@ -1,12 +1,12 @@
 package com.sunyesle.spring_boot_kotlin_tutorial
 
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.jpa.repository.JpaRepository
 
-interface ArticleRepository : CrudRepository<Article, Long> {
+interface ArticleRepository : JpaRepository<Article, Long> {
     fun findBySlug(slug: String): Article?
     fun findAllByOrderByAddedAtDesc(): Iterable<Article>
 }
 
-interface UserRepository : CrudRepository<User, Long> {
+interface UserRepository : JpaRepository<User, Long> {
     fun findByLogin(login: String): User?
 }
