@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException
 @RequestMapping("/api/article")
 class ArticleController(private val repository: ArticleRepository) {
 
-    @GetMapping("/")
+    @GetMapping
     fun findAll() = repository.findAllByOrderByAddedAtDesc()
 
     @GetMapping("/{slug}")
@@ -23,7 +23,7 @@ class ArticleController(private val repository: ArticleRepository) {
 @RequestMapping("/api/user")
 class UserController(private val repository: UserRepository) {
 
-    @GetMapping("/")
+    @GetMapping
     fun findAll() = repository.findAll()
 
     @GetMapping("/{login}")
