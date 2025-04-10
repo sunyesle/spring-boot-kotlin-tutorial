@@ -14,7 +14,7 @@ import kotlin.test.Test
 class HttpControllersTests(@Autowired val mockMvc: MockMvc) {
 
     @MockkBean
-    lateinit var userRepository: UserRepository
+    lateinit var userService: UserService
 
     @MockkBean
     lateinit var articleRepository: ArticleRepository
@@ -39,7 +39,7 @@ class HttpControllersTests(@Autowired val mockMvc: MockMvc) {
     fun `List users`() {
         val johnDoe = User("johnDoe", "John", "Doe")
         val janeDoe = User("janeDoe", "Jane", "Doe")
-        every { userRepository.findAll() } returns listOf(johnDoe, janeDoe)
+        every { userService.findAll() } returns listOf(johnDoe, janeDoe)
 
         mockMvc.perform(get("/api/user").accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)

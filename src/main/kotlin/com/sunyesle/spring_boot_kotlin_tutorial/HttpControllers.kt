@@ -21,12 +21,12 @@ class ArticleController(private val repository: ArticleRepository) {
 
 @RestController
 @RequestMapping("/api/user")
-class UserController(private val repository: UserRepository) {
+class UserController(private val service: UserService) {
 
     @GetMapping
-    fun findAll() = repository.findAll()
+    fun findAll() = service.findAll()
 
     @GetMapping("/{login}")
     fun findOne(@PathVariable login: String) =
-        repository.findByLogin(login) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "This user does not exist")
+        service.findByLogin(login) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "This user does not exist")
 }
