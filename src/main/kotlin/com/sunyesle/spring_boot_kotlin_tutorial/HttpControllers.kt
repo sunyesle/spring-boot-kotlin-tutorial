@@ -1,5 +1,6 @@
 package com.sunyesle.spring_boot_kotlin_tutorial
 
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -34,7 +35,7 @@ class UserController(private val service: UserService) {
         service.findByLogin(login) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "This user does not exist")
 
     @PostMapping
-    fun save(@RequestBody request: UserSaveRequest): ResponseEntity<User> {
+    fun save(@RequestBody @Valid request: UserSaveRequest): ResponseEntity<User> {
         val savedUser = service.save(request)
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser)
     }
