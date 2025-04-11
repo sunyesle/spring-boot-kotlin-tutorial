@@ -36,6 +36,7 @@ dependencies {
 	testImplementation("com.ninja-squad:springmockk:4.0.2")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation("io.rest-assured:kotlin-extensions:5.5.1")
 }
 
 kotlin {
