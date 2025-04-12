@@ -16,13 +16,35 @@ import kotlin.test.Test
  *  `@BeforeAll`, `@AfterAll`을 static이 아닌 메서드에 사용할 수 있다.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class IntegrationTests (
-    @Autowired val restTemplate: TestRestTemplate
+class IntegrationTests(
+    @Autowired val restTemplate: TestRestTemplate,
+    @Autowired val userRepository: UserRepository,
+    @Autowired val articleRepository: ArticleRepository,
+    @Autowired val databaseCleanup: DatabaseCleanup
 ) {
 
     @BeforeAll
     fun setUp() {
         println(">> Setup")
+        databaseCleanup.execute()
+
+        val johnDoe = userRepository.save(User("johnDoe", "John", "Doe"))
+        articleRepository.save(
+            Article(
+                title = "Lorem",
+                headline = "Lorem",
+                content = "dolor sit amet",
+                author = johnDoe
+            )
+        )
+        articleRepository.save(
+            Article(
+                title = "Ipsum",
+                headline = "Ipsum",
+                content = "dolor sit amet",
+                author = johnDoe
+            )
+        )
     }
 
     @Test

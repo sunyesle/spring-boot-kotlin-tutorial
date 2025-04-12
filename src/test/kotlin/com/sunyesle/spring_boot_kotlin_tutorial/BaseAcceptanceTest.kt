@@ -7,6 +7,7 @@ import io.restassured.filter.log.LogDetail
 import io.restassured.http.ContentType
 import io.restassured.specification.RequestSpecification
 import org.junit.jupiter.api.BeforeAll
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
 
@@ -17,6 +18,9 @@ abstract class BaseAcceptanceTest {
 
     @LocalServerPort
     var port: Int = 0
+
+    @Autowired
+    lateinit var databaseCleanup: DatabaseCleanup
 
     @BeforeAll
     fun setUp() {
@@ -31,5 +35,7 @@ abstract class BaseAcceptanceTest {
             .setContentType(ContentType.JSON)
             .setConfig(config)
             .build()
+
+        databaseCleanup.execute()
     }
 }
