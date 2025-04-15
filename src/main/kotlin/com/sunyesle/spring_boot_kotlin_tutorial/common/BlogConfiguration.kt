@@ -1,5 +1,9 @@
-package com.sunyesle.spring_boot_kotlin_tutorial
+package com.sunyesle.spring_boot_kotlin_tutorial.common
 
+import com.sunyesle.spring_boot_kotlin_tutorial.article.Article
+import com.sunyesle.spring_boot_kotlin_tutorial.article.ArticleRepository
+import com.sunyesle.spring_boot_kotlin_tutorial.user.User
+import com.sunyesle.spring_boot_kotlin_tutorial.user.UserRepository
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

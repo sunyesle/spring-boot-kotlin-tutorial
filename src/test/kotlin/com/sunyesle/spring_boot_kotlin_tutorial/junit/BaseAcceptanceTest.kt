@@ -1,5 +1,6 @@
-package com.sunyesle.spring_boot_kotlin_tutorial
+package com.sunyesle.spring_boot_kotlin_tutorial.junit
 
+import com.sunyesle.spring_boot_kotlin_tutorial.common.DatabaseCleanup
 import io.restassured.RestAssured
 import io.restassured.builder.RequestSpecBuilder
 import io.restassured.config.LogConfig

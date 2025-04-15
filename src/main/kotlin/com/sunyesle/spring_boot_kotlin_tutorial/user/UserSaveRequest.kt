@@ -1,4 +1,4 @@
-package com.sunyesle.spring_boot_kotlin_tutorial
+package com.sunyesle.spring_boot_kotlin_tutorial.user
 
 import jakarta.validation.constraints.NotBlank
 

@@ -1,6 +1,10 @@
-package com.sunyesle.spring_boot_kotlin_tutorial
+package com.sunyesle.spring_boot_kotlin_tutorial.junit
 
 import com.ninjasquad.springmockk.MockkBean
+import com.sunyesle.spring_boot_kotlin_tutorial.article.Article
+import com.sunyesle.spring_boot_kotlin_tutorial.article.ArticleRepository
+import com.sunyesle.spring_boot_kotlin_tutorial.user.User
+import com.sunyesle.spring_boot_kotlin_tutorial.user.UserService
 import io.mockk.every
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest

@@ -1,5 +1,6 @@
-package com.sunyesle.spring_boot_kotlin_tutorial
+package com.sunyesle.spring_boot_kotlin_tutorial.junit
 
+import com.sunyesle.spring_boot_kotlin_tutorial.user.UserSaveRequest
 import io.restassured.module.kotlin.extensions.Given
 import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When

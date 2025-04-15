@@ -1,11 +1,12 @@
-package com.sunyesle.spring_boot_kotlin_tutorial
+package com.sunyesle.spring_boot_kotlin_tutorial.kotest
 
+import com.sunyesle.spring_boot_kotlin_tutorial.user.UserSaveRequest
 import io.restassured.RestAssured.requestSpecification
 import io.restassured.module.kotlin.extensions.Extract
 import io.restassured.module.kotlin.extensions.Given
 import io.restassured.module.kotlin.extensions.When
 import io.restassured.response.Response
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 
 class UserAcceptanceTest : AcceptanceSpecs({
 
@@ -16,8 +17,8 @@ class UserAcceptanceTest : AcceptanceSpecs({
             val response = saveUser(request)
 
             it("201 응답을 반환한다") {
-                assertThat(response.statusCode).isEqualTo(201)
-                assertThat(response.jsonPath().getLong("id")).isNotNull()
+                Assertions.assertThat(response.statusCode).isEqualTo(201)
+                Assertions.assertThat(response.jsonPath().getLong("id")).isNotNull()
             }
         }
 
@@ -26,8 +27,8 @@ class UserAcceptanceTest : AcceptanceSpecs({
 
             it("목록에 해당 사용자가 존재한다") {
                 val users = response.jsonPath().getList("", Map::class.java)
-                assertThat(users).hasSize(1)
-                assertThat(users[0]["login"]).isEqualTo("johnDoe")
+                Assertions.assertThat(users).hasSize(1)
+                Assertions.assertThat(users[0]["login"]).isEqualTo("johnDoe")
             }
         }
 
@@ -36,8 +37,8 @@ class UserAcceptanceTest : AcceptanceSpecs({
 
             it("해당 사용자 정보를 반환한다") {
                 val json = response.jsonPath()
-                assertThat(json.getString("firstname")).isEqualTo("John")
-                assertThat(json.getString("lastname")).isEqualTo("Doe")
+                Assertions.assertThat(json.getString("firstname")).isEqualTo("John")
+                Assertions.assertThat(json.getString("lastname")).isEqualTo("Doe")
             }
         }
     }

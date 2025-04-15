@@ -1,5 +1,6 @@
-package com.sunyesle.spring_boot_kotlin_tutorial
+package com.sunyesle.spring_boot_kotlin_tutorial.kotest
 
+import com.sunyesle.spring_boot_kotlin_tutorial.common.DatabaseCleanup
 import io.kotest.core.spec.style.DescribeSpec
 import io.restassured.RestAssured
 import io.restassured.builder.RequestSpecBuilder

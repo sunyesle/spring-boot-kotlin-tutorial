@@ -1,5 +1,10 @@
-package com.sunyesle.spring_boot_kotlin_tutorial
+package com.sunyesle.spring_boot_kotlin_tutorial.web
 
+import com.sunyesle.spring_boot_kotlin_tutorial.article.Article
+import com.sunyesle.spring_boot_kotlin_tutorial.article.ArticleRepository
+import com.sunyesle.spring_boot_kotlin_tutorial.common.format
+import com.sunyesle.spring_boot_kotlin_tutorial.user.User
+import com.sunyesle.spring_boot_kotlin_tutorial.common.BlogProperties
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
