@@ -8,3 +8,9 @@ data class ErrorResponse<T>(
     val message: String,
     val data: T? = null
 )
+
+data class FieldErrorDto(
+    val field: String,
+    val value: Any?,
+    val message: String?
+)
