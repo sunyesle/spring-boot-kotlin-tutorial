@@ -13,12 +13,26 @@ class UserAcceptanceTest : AcceptanceSpecs({
     describe("사용자 API") {
         val request = UserSaveRequest("johnDoe", "John", "Doe")
 
-        context("사용자를 저장하면") {
-            val response = saveUser(request)
+        describe("사용자 저장") {
 
-            it("201 응답을 반환한다") {
-                Assertions.assertThat(response.statusCode).isEqualTo(201)
-                Assertions.assertThat(response.jsonPath().getLong("id")).isNotNull()
+            context("유효한 정보를 입력하면") {
+                val response = saveUser(request)
+
+                it("201 응답을 반환한다") {
+                    Assertions.assertThat(response.statusCode).isEqualTo(201)
+                    Assertions.assertThat(response.jsonPath().getLong("id")).isNotNull()
+                }
+            }
+
+            context("유효하지 않은 정보를 입력하면") {
+                val invalidRequest = UserSaveRequest("", "", "")
+                val response = saveUser(invalidRequest)
+
+                it("400 응답을 반환한다") {
+                    Assertions.assertThat(response.statusCode).isEqualTo(400)
+                    val errors = response.jsonPath().getList("data", Map::class.java)
+                    Assertions.assertThat(errors).isNotEmpty()
+                }
             }
         }
 
