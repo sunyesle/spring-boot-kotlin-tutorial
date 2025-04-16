@@ -5,6 +5,8 @@ import io.restassured.RestAssured
 import io.restassured.builder.RequestSpecBuilder
 import io.restassured.config.LogConfig
 import io.restassured.filter.log.LogDetail
+import io.restassured.filter.log.RequestLoggingFilter
+import io.restassured.filter.log.ResponseLoggingFilter
 import io.restassured.http.ContentType
 import io.restassured.specification.RequestSpecification
 import org.junit.jupiter.api.BeforeAll
@@ -35,6 +37,8 @@ abstract class BaseAcceptanceTest {
         requestSpecification = RequestSpecBuilder()
             .setContentType(ContentType.JSON)
             .setConfig(config)
+            .addFilter(RequestLoggingFilter())
+            .addFilter(ResponseLoggingFilter())
             .build()
 
         databaseCleanup.execute()
