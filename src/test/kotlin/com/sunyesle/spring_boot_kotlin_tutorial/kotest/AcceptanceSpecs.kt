@@ -6,6 +6,8 @@ import io.restassured.RestAssured
 import io.restassured.builder.RequestSpecBuilder
 import io.restassured.config.LogConfig
 import io.restassured.filter.log.LogDetail
+import io.restassured.filter.log.RequestLoggingFilter
+import io.restassured.filter.log.ResponseLoggingFilter
 import io.restassured.http.ContentType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -32,6 +34,8 @@ abstract class AcceptanceSpecs (body: DescribeSpec.() -> Unit) : DescribeSpec(bo
             RestAssured.requestSpecification = RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
                 .setConfig(config)
+                .addFilter(RequestLoggingFilter())
+                .addFilter(ResponseLoggingFilter())
                 .build()
 
             databaseCleanup.execute()
