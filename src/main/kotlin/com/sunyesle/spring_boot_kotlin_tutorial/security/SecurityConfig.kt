@@ -22,6 +22,7 @@ class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .headers { it.frameOptions { frame -> frame.sameOrigin() } }
             .authorizeHttpRequests {
+                it.requestMatchers("/api/auth/test").authenticated()
                 it.anyRequest().permitAll()
             }
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
