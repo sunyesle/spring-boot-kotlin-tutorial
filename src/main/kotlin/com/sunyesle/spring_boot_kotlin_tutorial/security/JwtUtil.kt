@@ -23,11 +23,12 @@ class JwtUtil(
     private val secretKey: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
     private val parser: JwtParser = Jwts.parser().verifyWith(secretKey).build()
 
-    fun generateToken(roles: List<String>): String {
+    fun generateToken(userId: String, roles: List<String>): String {
         val now = Instant.now()
         val expiryDate = now.plus(Duration.ofMillis(3600000))
 
         return Jwts.builder()
+            .subject(userId)
             .claim(CLAIM_KEY_ROLES, roles)
             .issuedAt(Date.from(now))
             .expiration(Date.from(expiryDate))
