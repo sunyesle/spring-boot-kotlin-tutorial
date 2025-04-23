@@ -5,9 +5,11 @@ import com.sunyesle.spring_boot_kotlin_tutorial.article.Article
 import com.sunyesle.spring_boot_kotlin_tutorial.article.ArticleRepository
 import com.sunyesle.spring_boot_kotlin_tutorial.security.SecurityConfig
 import com.sunyesle.spring_boot_kotlin_tutorial.user.User
+import com.sunyesle.spring_boot_kotlin_tutorial.user.UserController
 import com.sunyesle.spring_boot_kotlin_tutorial.user.UserService
 import io.mockk.every
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
@@ -16,8 +18,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import kotlin.test.Test
 
-@WebMvcTest
-@Import(SecurityConfig::class)
+@WebMvcTest(excludeAutoConfiguration = [SecurityAutoConfiguration::class])
 class HttpControllersTests(@Autowired val mockMvc: MockMvc) {
 
     @MockkBean
