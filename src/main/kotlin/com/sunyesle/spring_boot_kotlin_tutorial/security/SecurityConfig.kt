@@ -2,7 +2,8 @@ package com.sunyesle.spring_boot_kotlin_tutorial.security
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
@@ -10,12 +11,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 class SecurityConfig(
-    private val authenticationConfiguration: AuthenticationConfiguration
+    private val jwtAuthenticationProvider: JwtAuthenticationProvider
 ) {
 
     @Bean
+    fun authenticationManager(http: HttpSecurity): AuthenticationManager {
+        val builder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
+        builder.authenticationProvider(jwtAuthenticationProvider)
+        return builder.build()
+    }
+
+    @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        val jwtFilter = JwtAuthenticationFilter(authenticationConfiguration.authenticationManager)
+        val jwtFilter = JwtAuthenticationFilter(authenticationManager(http))
 
         http
             .csrf { it.disable() }
