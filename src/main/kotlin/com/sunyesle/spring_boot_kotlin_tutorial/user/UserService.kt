@@ -6,11 +6,12 @@ import org.springframework.stereotype.Service
 class UserService(private val repository: UserRepository) {
     fun findAll(): List<User> = repository.findAll()
 
-    fun findByLogin(login: String): User? = repository.findByLogin(login)
+    fun findByUsername(username: String): User? = repository.findByUsername(username)
 
     fun save(request: UserSaveRequest): User {
         val user = User(
-            login = request.login,
+            username = request.username,
+            password = request.password,
             firstname = request.firstname,
             lastname = request.lastname,
             description = request.description

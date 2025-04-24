@@ -12,9 +12,9 @@ class UserController(private val service: UserService) {
     @GetMapping
     fun findAll() = service.findAll()
 
-    @GetMapping("/{login}")
-    fun findOne(@PathVariable login: String) =
-        service.findByLogin(login) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "This user does not exist")
+    @GetMapping("/{username}")
+    fun findOne(@PathVariable username: String) =
+        service.findByUsername(username) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "This user does not exist")
 
     @PostMapping
     fun save(@RequestBody @Valid request: UserSaveRequest): ResponseEntity<User> {

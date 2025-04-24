@@ -6,7 +6,8 @@ import jakarta.persistence.Id
 
 @Entity
 class User(
-    var login: String,
+    var username: String,
+    var password: String,
     var firstname: String,
     var lastname: String,
     var description: String? = null,

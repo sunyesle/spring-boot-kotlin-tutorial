@@ -11,7 +11,7 @@ import org.assertj.core.api.Assertions
 class UserAcceptanceTest : AcceptanceSpecs({
 
     describe("사용자 API") {
-        val request = UserSaveRequest("johnDoe", "John", "Doe")
+        val request = UserSaveRequest("johnDoe", "password", "John", "Doe")
 
         describe("사용자 저장") {
 
@@ -25,7 +25,7 @@ class UserAcceptanceTest : AcceptanceSpecs({
             }
 
             context("유효하지 않은 정보를 입력하면") {
-                val invalidRequest = UserSaveRequest("", "", "")
+                val invalidRequest = UserSaveRequest("", "", "", "")
                 val response = saveUser(invalidRequest)
 
                 it("400 응답을 반환한다") {
@@ -42,12 +42,12 @@ class UserAcceptanceTest : AcceptanceSpecs({
             it("목록에 해당 사용자가 존재한다") {
                 val users = response.jsonPath().getList("", Map::class.java)
                 Assertions.assertThat(users).hasSize(1)
-                Assertions.assertThat(users[0]["login"]).isEqualTo("johnDoe")
+                Assertions.assertThat(users[0]["username"]).isEqualTo("johnDoe")
             }
         }
 
         context("로그인으로 사용자를 조회하면") {
-            val response = findUserByLogin(request.login)
+            val response = findUserByUsername(request.username)
 
             it("해당 사용자 정보를 반환한다") {
                 val json = response.jsonPath()
@@ -79,11 +79,11 @@ private fun findUsers(): Response {
     }
 }
 
-private fun findUserByLogin(login: String): Response {
+private fun findUserByUsername(username: String): Response {
     return Given {
         spec(requestSpecification)
     } When {
-        get("/api/user/{login}", login)
+        get("/api/user/{username}", username)
     } Extract {
         response()
     }

@@ -34,7 +34,7 @@ class IntegrationTests(
         println(">> Setup")
         databaseCleanup.execute()
 
-        val johnDoe = userRepository.save(User("johnDoe", "John", "Doe"))
+        val johnDoe = userRepository.save(User("johnDoe", "password", "John", "Doe"))
         articleRepository.save(
             Article(
                 title = "Lorem",

@@ -13,7 +13,8 @@ import org.junit.jupiter.api.Test
 class AcceptanceTests : BaseAcceptanceTest() {
 
     private val userSaveRequest = UserSaveRequest(
-        login = "johnDoe",
+        username = "johnDoe",
+        password = "password",
         firstname = "John",
         lastname = "Doe"
     )
@@ -24,7 +25,7 @@ class AcceptanceTests : BaseAcceptanceTest() {
 
         `find users`()
 
-        `find user with given login`(userSaveRequest.login)
+        `find user with given username`(userSaveRequest.username)
     }
 
     fun `save user`(request: UserSaveRequest) {
@@ -50,11 +51,11 @@ class AcceptanceTests : BaseAcceptanceTest() {
         }
     }
 
-    fun `find user with given login`(login: String) {
+    fun `find user with given username`(username: String) {
         Given {
             spec(requestSpecification)
         } When {
-            get("/api/user/{login}", login)
+            get("/api/user/{username}", username)
         } Then {
             statusCode(HttpStatus.SC_OK)
             body(

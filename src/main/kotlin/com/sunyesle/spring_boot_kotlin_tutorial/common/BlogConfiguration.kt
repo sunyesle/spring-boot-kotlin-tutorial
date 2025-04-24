@@ -17,7 +17,7 @@ class BlogConfiguration {
         articleRepository: ArticleRepository
     ) = ApplicationRunner {
 
-        val johnDoe = userRepository.save(User("johnDoe", "John", "Doe"))
+        val johnDoe = userRepository.save(User("johnDoe", "password", "John", "Doe"))
         articleRepository.save(
             Article(
                 title = "Lorem",
