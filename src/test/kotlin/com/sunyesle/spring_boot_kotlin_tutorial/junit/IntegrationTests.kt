@@ -4,6 +4,7 @@ import com.sunyesle.spring_boot_kotlin_tutorial.article.Article
 import com.sunyesle.spring_boot_kotlin_tutorial.article.ArticleRepository
 import com.sunyesle.spring_boot_kotlin_tutorial.common.DatabaseCleanup
 import com.sunyesle.spring_boot_kotlin_tutorial.common.toSlug
+import com.sunyesle.spring_boot_kotlin_tutorial.user.Role
 import com.sunyesle.spring_boot_kotlin_tutorial.user.User
 import com.sunyesle.spring_boot_kotlin_tutorial.user.UserRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -34,7 +35,7 @@ class IntegrationTests(
         println(">> Setup")
         databaseCleanup.execute()
 
-        val johnDoe = userRepository.save(User("johnDoe", "password", "John", "Doe"))
+        val johnDoe = userRepository.save(User("johnDoe", "password", Role.USER, "John", "Doe"))
         articleRepository.save(
             Article(
                 title = "Lorem",

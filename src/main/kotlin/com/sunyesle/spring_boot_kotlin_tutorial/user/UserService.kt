@@ -12,6 +12,7 @@ class UserService(private val repository: UserRepository) {
         val user = User(
             username = request.username,
             password = request.password,
+            role = Role.USER,
             firstname = request.firstname,
             lastname = request.lastname,
             description = request.description

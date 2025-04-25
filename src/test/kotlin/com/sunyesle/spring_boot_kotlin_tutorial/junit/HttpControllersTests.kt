@@ -3,6 +3,7 @@ package com.sunyesle.spring_boot_kotlin_tutorial.junit
 import com.ninjasquad.springmockk.MockkBean
 import com.sunyesle.spring_boot_kotlin_tutorial.article.Article
 import com.sunyesle.spring_boot_kotlin_tutorial.article.ArticleRepository
+import com.sunyesle.spring_boot_kotlin_tutorial.user.Role
 import com.sunyesle.spring_boot_kotlin_tutorial.user.User
 import com.sunyesle.spring_boot_kotlin_tutorial.user.UserService
 import io.mockk.every
@@ -26,7 +27,7 @@ class HttpControllersTests(@Autowired val mockMvc: MockMvc) {
 
     @Test
     fun `List articles`() {
-        val johnDoe = User("johnDoe", "password", "John", "Doe")
+        val johnDoe = User("johnDoe", "password", Role.USER, "John", "Doe")
         val loremArticle = Article("Lorem", "Lorem", "dolor sit amet", johnDoe)
         val ipsumArticle = Article("Ipsum", "Ipsum", "dolor sit amet", johnDoe)
         every { articleRepository.findAllByOrderByAddedAtDesc() } returns listOf(loremArticle, ipsumArticle)
@@ -42,8 +43,8 @@ class HttpControllersTests(@Autowired val mockMvc: MockMvc) {
 
     @Test
     fun `List users`() {
-        val johnDoe = User("johnDoe", "password", "John", "Doe")
-        val janeDoe = User("janeDoe", "password", "Jane", "Doe")
+        val johnDoe = User("johnDoe", "password", Role.USER, "John", "Doe")
+        val janeDoe = User("janeDoe", "password", Role.USER, "Jane", "Doe")
         every { userService.findAll() } returns listOf(johnDoe, janeDoe)
 
         mockMvc.perform(get("/api/user").accept(MediaType.APPLICATION_JSON))

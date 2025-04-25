@@ -2,6 +2,7 @@ package com.sunyesle.spring_boot_kotlin_tutorial.junit
 
 import com.sunyesle.spring_boot_kotlin_tutorial.article.Article
 import com.sunyesle.spring_boot_kotlin_tutorial.article.ArticleRepository
+import com.sunyesle.spring_boot_kotlin_tutorial.user.Role
 import com.sunyesle.spring_boot_kotlin_tutorial.user.User
 import com.sunyesle.spring_boot_kotlin_tutorial.user.UserRepository
 import org.assertj.core.api.Assertions.assertThat
@@ -19,7 +20,7 @@ class RepositoriesTests @Autowired constructor(
 ) {
     @Test
     fun `When finByIdOrNull then return Article`() {
-        val johnDoe = User("johnDoe", "password", "John", "Doe")
+        val johnDoe = User("johnDoe", "password", Role.USER, "John", "Doe")
         entityManager.persist(johnDoe)
         val article = Article("Lorem", "Lorem", "dolor sit amet", johnDoe)
         entityManager.persist(article)
@@ -30,7 +31,7 @@ class RepositoriesTests @Autowired constructor(
 
     @Test
     fun `When findByLogin then return User`() {
-        val johnDoe = User("johnDoe", "password", "John", "Doe")
+        val johnDoe = User("johnDoe", "password", Role.USER, "John", "Doe")
         entityManager.persist(johnDoe)
         entityManager.flush()
         val user = userRepository.findByUsername(johnDoe.username)

@@ -8,8 +8,13 @@ import jakarta.persistence.Id
 class User(
     var username: String,
     var password: String,
+    var role: Role,
     var firstname: String,
     var lastname: String,
     var description: String? = null,
     @Id @GeneratedValue var id: Long? = null
 )
+
+enum class Role {
+    USER, ADMIN
+}
