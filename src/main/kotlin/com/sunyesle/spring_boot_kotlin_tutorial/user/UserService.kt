@@ -1,9 +1,13 @@
 package com.sunyesle.spring_boot_kotlin_tutorial.user
 
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
-class UserService(private val repository: UserRepository) {
+class UserService(
+    private val repository: UserRepository,
+    private val passwordEncoder: PasswordEncoder
+) {
     fun findAll(): List<User> = repository.findAll()
 
     fun findByUsername(username: String): User? = repository.findByUsername(username)
@@ -11,7 +15,7 @@ class UserService(private val repository: UserRepository) {
     fun save(request: UserSaveRequest): User {
         val user = User(
             username = request.username,
-            password = request.password,
+            password = passwordEncoder.encode(request.password),
             role = Role.USER,
             firstname = request.firstname,
             lastname = request.lastname,

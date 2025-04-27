@@ -8,9 +8,12 @@ import com.sunyesle.spring_boot_kotlin_tutorial.user.UserRepository
 import org.springframework.boot.ApplicationRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.crypto.password.PasswordEncoder
 
 @Configuration
-class BlogConfiguration {
+class BlogConfiguration(
+    private val passwordEncoder: PasswordEncoder
+) {
 
     @Bean
     fun databaseInitializer(
@@ -18,7 +21,7 @@ class BlogConfiguration {
         articleRepository: ArticleRepository
     ) = ApplicationRunner {
 
-        val johnDoe = userRepository.save(User("johnDoe", "password", Role.USER, "John", "Doe"))
+        val johnDoe = userRepository.save(User("johnDoe", passwordEncoder.encode("password"), Role.USER, "John", "Doe"))
         articleRepository.save(
             Article(
                 title = "Lorem",
