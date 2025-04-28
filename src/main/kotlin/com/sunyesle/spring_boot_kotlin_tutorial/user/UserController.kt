@@ -17,7 +17,7 @@ class UserController(private val service: UserService) {
         service.findByUsername(username) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "This user does not exist")
 
     @PostMapping
-    fun save(@RequestBody @Valid request: UserSaveRequest): ResponseEntity<User> {
+    fun save(@RequestBody @Valid request: UserSaveRequest): ResponseEntity<UserResponse> {
         val savedUser = service.save(request)
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser)
     }

@@ -8,11 +8,11 @@ class UserService(
     private val repository: UserRepository,
     private val passwordEncoder: PasswordEncoder
 ) {
-    fun findAll(): List<User> = repository.findAll()
+    fun findAll(): List<UserResponse> = repository.findAll().map(UserResponse::of)
 
-    fun findByUsername(username: String): User? = repository.findByUsername(username)
+    fun findByUsername(username: String): UserResponse? = repository.findByUsername(username)?.let(UserResponse::of)
 
-    fun save(request: UserSaveRequest): User {
+    fun save(request: UserSaveRequest): UserResponse {
         val user = User(
             username = request.username,
             password = passwordEncoder.encode(request.password),
@@ -21,6 +21,6 @@ class UserService(
             lastname = request.lastname,
             description = request.description
         )
-        return repository.save(user)
+        return repository.save(user).let(UserResponse::of)
     }
 }

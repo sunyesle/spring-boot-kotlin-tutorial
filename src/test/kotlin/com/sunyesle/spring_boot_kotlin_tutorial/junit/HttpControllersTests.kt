@@ -5,6 +5,7 @@ import com.sunyesle.spring_boot_kotlin_tutorial.article.Article
 import com.sunyesle.spring_boot_kotlin_tutorial.article.ArticleRepository
 import com.sunyesle.spring_boot_kotlin_tutorial.user.Role
 import com.sunyesle.spring_boot_kotlin_tutorial.user.User
+import com.sunyesle.spring_boot_kotlin_tutorial.user.UserResponse
 import com.sunyesle.spring_boot_kotlin_tutorial.user.UserService
 import io.mockk.every
 import org.springframework.beans.factory.annotation.Autowired
@@ -45,7 +46,7 @@ class HttpControllersTests(@Autowired val mockMvc: MockMvc) {
     fun `List users`() {
         val johnDoe = User("johnDoe", "password", Role.USER, "John", "Doe")
         val janeDoe = User("janeDoe", "password", Role.USER, "Jane", "Doe")
-        every { userService.findAll() } returns listOf(johnDoe, janeDoe)
+        every { userService.findAll() } returns listOf(UserResponse.of(johnDoe), UserResponse.of(janeDoe))
 
         mockMvc.perform(get("/api/user").accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
