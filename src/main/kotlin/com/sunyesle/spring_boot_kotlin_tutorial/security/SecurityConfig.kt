@@ -33,7 +33,8 @@ class SecurityConfig(
             .headers { it.frameOptions { frame -> frame.sameOrigin() } }
             .authorizeHttpRequests {
                 it.requestMatchers("/api/auth/token").permitAll()
-                it.requestMatchers("/api/auth/test").authenticated()
+                it.requestMatchers("/api/auth/test/admin").hasRole("ADMIN")
+                it.requestMatchers("/api/auth/test/user").hasRole("USER")
                 it.anyRequest().permitAll()
             }
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)

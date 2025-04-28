@@ -13,8 +13,13 @@ class AuthController (
         @RequestBody request: TokenRequest
     ): TokenResponse = authService.generateToken(request)
 
-    @GetMapping("/test")
-    fun test() {
-        println("test")
+    @GetMapping("/test/user")
+    fun userEndpoint() {
+        println("hello user")
+    }
+
+    @GetMapping("/test/admin")
+    fun adminEndpoint() {
+        println("hello admin")
     }
 }
