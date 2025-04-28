@@ -3,6 +3,7 @@ package com.sunyesle.spring_boot_kotlin_tutorial.common
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
@@ -26,6 +27,13 @@ class ExceptionHandler {
                 message = "유효성 검증에 실패했습니다.",
                 allErrors
             )
+        )
+    }
+
+    @ExceptionHandler(BadCredentialsException::class)
+    fun handleBadCredentialsException(e: Exception): ResponseEntity<ErrorResponse<Nothing>> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+            ErrorResponse(code = "UNAUTHORIZED", message = "인증에 실패했습니다.")
         )
     }
 
