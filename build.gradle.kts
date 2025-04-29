@@ -45,6 +45,7 @@ dependencies {
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation("io.rest-assured:kotlin-extensions:5.5.1")
+	testImplementation("org.springframework.security:spring-security-test")
 
 	// Kotest
 	testImplementation("io.kotest:kotest-runner-junit5-jvm:5.9.1")
