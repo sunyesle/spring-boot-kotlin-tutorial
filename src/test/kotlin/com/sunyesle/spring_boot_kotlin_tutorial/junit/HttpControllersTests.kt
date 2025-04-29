@@ -2,22 +2,21 @@ package com.sunyesle.spring_boot_kotlin_tutorial.junit
 
 import com.ninjasquad.springmockk.MockkBean
 import com.sunyesle.spring_boot_kotlin_tutorial.article.Article
+import com.sunyesle.spring_boot_kotlin_tutorial.article.ArticleController
 import com.sunyesle.spring_boot_kotlin_tutorial.article.ArticleRepository
-import com.sunyesle.spring_boot_kotlin_tutorial.user.Role
-import com.sunyesle.spring_boot_kotlin_tutorial.user.User
-import com.sunyesle.spring_boot_kotlin_tutorial.user.UserResponse
-import com.sunyesle.spring_boot_kotlin_tutorial.user.UserService
+import com.sunyesle.spring_boot_kotlin_tutorial.user.*
 import io.mockk.every
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.MediaType
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import kotlin.test.Test
 
-@WebMvcTest(excludeAutoConfiguration = [SecurityAutoConfiguration::class])
+@WebMvcTest(controllers = [ArticleController::class, UserController::class])
 class HttpControllersTests(@Autowired val mockMvc: MockMvc) {
 
     @MockkBean
@@ -27,6 +26,7 @@ class HttpControllersTests(@Autowired val mockMvc: MockMvc) {
     lateinit var articleRepository: ArticleRepository
 
     @Test
+    @WithMockUser
     fun `List articles`() {
         val johnDoe = User("johnDoe", "password", Role.USER, "John", "Doe")
         val loremArticle = Article("Lorem", "Lorem", "dolor sit amet", johnDoe)
@@ -43,6 +43,7 @@ class HttpControllersTests(@Autowired val mockMvc: MockMvc) {
     }
 
     @Test
+    @WithMockUser
     fun `List users`() {
         val johnDoe = User("johnDoe", "password", Role.USER, "John", "Doe")
         val janeDoe = User("janeDoe", "password", Role.USER, "Jane", "Doe")
