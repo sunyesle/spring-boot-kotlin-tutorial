@@ -8,9 +8,11 @@ import com.sunyesle.spring_boot_kotlin_tutorial.user.UserSaveRequest
 import io.restassured.RestAssured.requestSpecification
 import io.restassured.module.kotlin.extensions.Extract
 import io.restassured.module.kotlin.extensions.Given
+import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When
 import io.restassured.response.Response
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.password.PasswordEncoder
 
@@ -25,8 +27,8 @@ class AuthAcceptanceTest : AcceptanceSpecs({
                 val response = generateToken(request)
 
                 it("토큰을 반환한다") {
-                    Assertions.assertThat(response.statusCode).isEqualTo(200)
-                    Assertions.assertThat(response.jsonPath().getString("accessToken")).isNotNull()
+                    assertThat(response.statusCode).isEqualTo(200)
+                    assertThat(response.jsonPath().getString("accessToken")).isNotNull()
                 }
             }
 
@@ -35,11 +37,37 @@ class AuthAcceptanceTest : AcceptanceSpecs({
                 val response = generateToken(invalidRequest)
 
                 it("401 응답을 반환한다") {
-                    Assertions.assertThat(response.statusCode).isEqualTo(401)
+                    assertThat(response.statusCode).isEqualTo(401)
                 }
             }
         }
 
+        describe("USER 권한이 필요한 API") {
+
+            it("USER 권한으로 접근할 수 있다") {
+                val tokenRequest = TokenRequest("johnDoe", "password")
+                val accessToken = generateToken(tokenRequest).jsonPath().getString("accessToken")
+
+                Given {
+                    spec(requestSpecification)
+                    header("Authorization", "Bearer $accessToken")
+                } When {
+                    get("/api/auth/test/user")
+                } Then {
+                    statusCode(200)
+                }
+            }
+
+            it("토큰 없이 접근하면 401 응답을 반환한다") {
+                Given {
+                    spec(requestSpecification)
+                } When {
+                    get("/api/auth/test/user")
+                } Then {
+                    statusCode(401)
+                }
+            }
+        }
     }
 }) {
     @Autowired
