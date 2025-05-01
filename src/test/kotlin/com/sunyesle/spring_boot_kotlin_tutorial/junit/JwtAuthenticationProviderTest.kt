@@ -6,12 +6,19 @@ import com.sunyesle.spring_boot_kotlin_tutorial.security.JwtAuthenticationToken
 import com.sunyesle.spring_boot_kotlin_tutorial.security.JwtUtil
 import io.jsonwebtoken.io.Encoders
 import io.jsonwebtoken.security.Keys
+import io.mockk.every
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.User
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
 import javax.crypto.SecretKey
 
 class JwtAuthenticationProviderTest {
@@ -20,18 +27,27 @@ class JwtAuthenticationProviderTest {
     private val base64Secret: String = Encoders.BASE64.encode(secretKey.encoded)
     private val jwtUtil = JwtUtil(base64Secret)
 
-    private val provider = JwtAuthenticationProvider(jwtUtil)
+    private lateinit var userDetailsService: UserDetailsService
+    private lateinit var provider: JwtAuthenticationProvider
+
+    @BeforeEach
+    fun setup() {
+        userDetailsService = mockk()
+        provider = JwtAuthenticationProvider(jwtUtil, userDetailsService)
+    }
 
     @Test
     fun `authenticate - 토큰이 유효하다면 JwtAuthenticationToken을 반환한다`() {
-        val userId = "testUser"
+        val username = "testUser"
         val roles = listOf("ROLE_USER")
-        val token = jwtUtil.generateToken(userId, roles)
+        val token = jwtUtil.generateToken(username, roles)
         val authToken = JwtAuthenticationToken(token)
+        val userDetails: UserDetails = User(username, "", roles.map { SimpleGrantedAuthority(it) })
+        every { userDetailsService.loadUserByUsername(username) } returns userDetails
 
         val result = provider.authenticate(authToken) as JwtAuthenticationToken
 
-        assertThat(result.principal).isEqualTo(userId)
+        assertThat(result.principal).isEqualTo(userDetails)
         assertThat(result.credentials).isEqualTo("")
         assertThat(result.isAuthenticated).isTrue()
         val authorities = result.authorities.map { it.authority }

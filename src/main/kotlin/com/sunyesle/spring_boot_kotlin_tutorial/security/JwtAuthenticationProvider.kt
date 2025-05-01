@@ -5,11 +5,15 @@ import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Component
 
 @Component
 class JwtAuthenticationProvider(
-    private val jwtUtil: JwtUtil
+    private val jwtUtil: JwtUtil,
+    private val userDetailsService: UserDetailsService
 ) : AuthenticationProvider {
 
     override fun authenticate(authentication: Authentication?): Authentication {
@@ -25,8 +29,15 @@ class JwtAuthenticationProvider(
             throw JwtAuthenticationException("JWT validation failed", e)
         }
 
+        val username = claims.subject
+        val userDetails: UserDetails = try {
+            userDetailsService.loadUserByUsername(username)
+        }catch (e: UsernameNotFoundException) {
+            throw JwtAuthenticationException("User not found", e)
+        }
+
         return JwtAuthenticationToken(
-            claims.subject,
+            userDetails,
             "",
             createGrantedAuthorities(claims)
         )
