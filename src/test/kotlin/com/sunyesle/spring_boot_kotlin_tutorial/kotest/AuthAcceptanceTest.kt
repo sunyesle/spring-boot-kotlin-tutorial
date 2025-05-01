@@ -68,6 +68,33 @@ class AuthAcceptanceTest : AcceptanceSpecs({
                 }
             }
         }
+
+        describe("ADMIN 권한이 필요한 API") {
+
+            it("USER 권한으로 접근하면 403 응답을 반환한다") {
+                val userTokenRequest = TokenRequest("johnDoe", "password")
+                val accessToken = generateToken(userTokenRequest).jsonPath().getString("accessToken")
+
+                Given {
+                    spec(requestSpecification)
+                    header("Authorization", "Bearer $accessToken")
+                } When {
+                    get("/api/auth/test/admin")
+                } Then {
+                    statusCode(403)
+                }
+            }
+
+            it("토큰 없이 접근하면 401 응답을 반환한다") {
+                Given {
+                    spec(requestSpecification)
+                } When {
+                    get("/api/auth/test/admin")
+                } Then {
+                    statusCode(401)
+                }
+            }
+        }
     }
 }) {
     @Autowired
