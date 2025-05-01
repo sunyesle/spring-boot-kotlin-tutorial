@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
@@ -21,6 +22,10 @@ class SecurityConfig {
     @Bean
     fun authenticationEntryPoint(objectMapper: ObjectMapper) : AuthenticationEntryPoint =
         CustomAuthenticationEntryPoint(objectMapper)
+
+    @Bean
+    fun accessDeniedHandler(objectMapper: ObjectMapper) : AccessDeniedHandler =
+        CustomAccessDeniedHandler(objectMapper)
 
     @Bean
     fun userDetailService(userRepository: UserRepository) : UserDetailsService =
@@ -44,7 +49,8 @@ class SecurityConfig {
     fun securityFilterChain(
         http: HttpSecurity,
         jwtAuthenticationFilter: JwtAuthenticationFilter,
-        authenticationEntryPoint: AuthenticationEntryPoint
+        authenticationEntryPoint: AuthenticationEntryPoint,
+        accessDeniedHandler: AccessDeniedHandler
     ): SecurityFilterChain {
 
         http
@@ -60,6 +66,7 @@ class SecurityConfig {
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
             .exceptionHandling {
                 it.authenticationEntryPoint(authenticationEntryPoint)
+                it.accessDeniedHandler(accessDeniedHandler)
             }
 
         return http.build()
