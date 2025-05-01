@@ -12,20 +12,27 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
-class SecurityConfig(
-    private val jwtAuthenticationProvider: JwtAuthenticationProvider
-) {
+class SecurityConfig {
 
     @Bean
-    fun authenticationManager(http: HttpSecurity): AuthenticationManager {
+    fun jwtAuthenticationFilter(authenticationManager: AuthenticationManager): JwtAuthenticationFilter =
+        JwtAuthenticationFilter(authenticationManager)
+
+    @Bean
+    fun authenticationManager(
+        http: HttpSecurity,
+        jwtAuthenticationProvider: JwtAuthenticationProvider
+    ): AuthenticationManager {
         val builder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
         builder.authenticationProvider(jwtAuthenticationProvider)
         return builder.build()
     }
 
     @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        val jwtFilter = JwtAuthenticationFilter(authenticationManager(http))
+    fun securityFilterChain(
+        http: HttpSecurity,
+        jwtAuthenticationFilter: JwtAuthenticationFilter
+    ): SecurityFilterChain {
 
         http
             .csrf { it.disable() }
@@ -37,7 +44,7 @@ class SecurityConfig(
                 it.requestMatchers("/api/auth/test/user").hasRole("USER")
                 it.anyRequest().permitAll()
             }
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
     }
