@@ -1,5 +1,6 @@
 package com.sunyesle.spring_boot_kotlin_tutorial.security
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.sunyesle.spring_boot_kotlin_tutorial.user.UserRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -10,11 +11,16 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
 class SecurityConfig {
+
+    @Bean
+    fun authenticationEntryPoint(objectMapper: ObjectMapper) : AuthenticationEntryPoint =
+        CustomAuthenticationEntryPoint(objectMapper)
 
     @Bean
     fun userDetailService(userRepository: UserRepository) : UserDetailsService =
@@ -37,7 +43,8 @@ class SecurityConfig {
     @Bean
     fun securityFilterChain(
         http: HttpSecurity,
-        jwtAuthenticationFilter: JwtAuthenticationFilter
+        jwtAuthenticationFilter: JwtAuthenticationFilter,
+        authenticationEntryPoint: AuthenticationEntryPoint
     ): SecurityFilterChain {
 
         http
@@ -51,6 +58,9 @@ class SecurityConfig {
                 it.anyRequest().permitAll()
             }
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter::class.java)
+            .exceptionHandling {
+                it.authenticationEntryPoint(authenticationEntryPoint)
+            }
 
         return http.build()
     }
