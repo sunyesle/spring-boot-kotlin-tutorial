@@ -1,5 +1,6 @@
 package com.sunyesle.spring_boot_kotlin_tutorial.kotest
 
+import com.sunyesle.spring_boot_kotlin_tutorial.security.RefreshTokenRequest
 import com.sunyesle.spring_boot_kotlin_tutorial.security.TokenRequest
 import com.sunyesle.spring_boot_kotlin_tutorial.user.Role
 import com.sunyesle.spring_boot_kotlin_tutorial.user.User
@@ -36,6 +37,32 @@ class AuthAcceptanceTest : AcceptanceSpecs({
             context("유효하지 않은 정보를 입력하면") {
                 val invalidRequest = TokenRequest("null", "null")
                 val response = generateToken(invalidRequest)
+
+                it("401 응답을 반환한다") {
+                    assertThat(response.statusCode).isEqualTo(401)
+                }
+            }
+        }
+
+        describe("액세스 토큰 재발급") {
+
+            context("유효한 리프레시 토큰을 입력하면") {
+                val tokenRequest = TokenRequest("johnDoe", "password")
+                val refreshToken = generateToken(tokenRequest).jsonPath().getString("refreshToken")
+                val request = RefreshTokenRequest(refreshToken)
+
+                val response = reissueAccessToken(request)
+
+                it("액세스 토큰을 반환한다") {
+                    assertThat(response.statusCode).isEqualTo(200)
+                    assertThat(response.jsonPath().getString("accessToken")).isNotNull()
+                }
+            }
+
+            context("유효하지 않은 리프레시 토큰을 입력하면") {
+                val invalidRequest = RefreshTokenRequest("null")
+
+                val response = reissueAccessToken(invalidRequest)
 
                 it("401 응답을 반환한다") {
                     assertThat(response.statusCode).isEqualTo(401)
@@ -129,4 +156,16 @@ private fun generateToken(request: TokenRequest): Response {
     } Extract {
         response()
     }
+}
+
+private fun reissueAccessToken(invalidRequest: RefreshTokenRequest): Response {
+    val response = Given {
+        spec(requestSpecification)
+        body(invalidRequest)
+    } When {
+        post("/api/auth/token/refresh")
+    } Extract {
+        response()
+    }
+    return response
 }
