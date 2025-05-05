@@ -29,6 +29,7 @@ class AuthAcceptanceTest : AcceptanceSpecs({
                 it("토큰을 반환한다") {
                     assertThat(response.statusCode).isEqualTo(200)
                     assertThat(response.jsonPath().getString("accessToken")).isNotNull()
+                    assertThat(response.jsonPath().getString("refreshToken")).isNotNull()
                 }
             }
 
