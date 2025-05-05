@@ -6,10 +6,11 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
-class AuthService (
+class AuthService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtUtil: JwtUtil
+    private val jwtUtil: JwtUtil,
+    private val refreshTokenRepository: RefreshTokenRepository
 ) {
 
     fun generateToken(request: TokenRequest): TokenResponse {
@@ -21,7 +22,10 @@ class AuthService (
         }
 
         val accessToken = jwtUtil.generateAccessToken(user.username, listOf("ROLE_" + user.role.name))
+        val refreshToken = jwtUtil.generateRefreshToken(user.username)
 
-        return TokenResponse(accessToken)
+        refreshTokenRepository.save(RefreshToken(refreshToken))
+
+        return TokenResponse(accessToken, refreshToken)
     }
 }
