@@ -1,5 +1,6 @@
 package com.sunyesle.spring_boot_kotlin_tutorial.common
 
+import com.sunyesle.spring_boot_kotlin_tutorial.security.InvalidRefreshTokenException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -31,9 +32,16 @@ class ExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException::class)
-    fun handleBadCredentialsException(e: Exception): ResponseEntity<ErrorResponse<Nothing>> {
+    fun handleBadCredentialsException(e: BadCredentialsException): ResponseEntity<ErrorResponse<Nothing>> {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
             ErrorResponse(code = "UNAUTHORIZED", message = "인증에 실패했습니다.")
+        )
+    }
+
+    @ExceptionHandler(InvalidRefreshTokenException::class)
+    fun handleInvalidRefreshTokenException(e: InvalidRefreshTokenException): ResponseEntity<ErrorResponse<Nothing>> {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+            ErrorResponse(code = "INVALID_REFRESH_TOKEN", message = "유효하지 않은 리프레시 토큰입니다.")
         )
     }
 
