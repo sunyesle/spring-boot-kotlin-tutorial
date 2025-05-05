@@ -26,11 +26,11 @@ class JwtAuthenticationFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val jwt = resolveToken(request)
+        val accessToken = resolveToken(request)
 
-        if (!jwt.isNullOrBlank()) {
+        if (!accessToken.isNullOrBlank()) {
             try {
-                val jwtAuthenticationToken: Authentication = JwtAuthenticationToken(jwt)
+                val jwtAuthenticationToken: Authentication = JwtAuthenticationToken(accessToken)
                 val authentication = authenticationManager.authenticate(jwtAuthenticationToken)
                 SecurityContextHolder.getContext().authentication = authentication
             } catch (e: AuthenticationException) {

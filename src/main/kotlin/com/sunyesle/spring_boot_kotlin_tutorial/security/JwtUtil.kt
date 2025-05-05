@@ -14,21 +14,24 @@ import javax.crypto.SecretKey
 
 @Component
 class JwtUtil(
-    @Value("\${jwt.secret}") secret: String
+    @Value("\${jwt.secret}") secret: String,
+    @Value("\${jwt.refresh-secret}") refreshSecret: String
 ) {
     companion object {
         const val CLAIM_KEY_ROLES = "roles"
     }
 
     private val secretKey: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
-    private val parser: JwtParser = Jwts.parser().verifyWith(secretKey).build()
+    private val refreshSecretKey: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshSecret))
+    private val accessTokenParser: JwtParser = Jwts.parser().verifyWith(secretKey).build()
+    private val refreshTokenParser: JwtParser = Jwts.parser().verifyWith(secretKey).build()
 
-    fun generateToken(userId: String, roles: List<String>): String {
+    fun generateAccessToken(username: String, roles: List<String>): String {
         val now = Instant.now()
         val expiryDate = now.plus(Duration.ofMillis(3600000))
 
         return Jwts.builder()
-            .subject(userId)
+            .subject(username)
             .claim(CLAIM_KEY_ROLES, roles)
             .issuedAt(Date.from(now))
             .expiration(Date.from(expiryDate))
@@ -36,7 +39,23 @@ class JwtUtil(
             .compact()
     }
 
-    fun extractClaims(token: String): Claims {
-        return parser.parseSignedClaims(token).payload
+    fun generateRefreshToken(username: String): String {
+        val now = Instant.now()
+        val expiryDate = now.plus(Duration.ofMillis(36000000))
+
+        return Jwts.builder()
+            .subject(username)
+            .issuedAt(Date.from(now))
+            .expiration(Date.from(expiryDate))
+            .signWith(refreshSecretKey)
+            .compact()
+    }
+
+    fun extractClaimsFromAccessToken(token: String): Claims {
+        return accessTokenParser.parseSignedClaims(token).payload
+    }
+
+    fun extractClaimsFromRefreshToken(token: String): Claims {
+        return refreshTokenParser.parseSignedClaims(token).payload
     }
 }

@@ -20,11 +20,11 @@ class JwtAuthenticationProvider(
         val jwtAuthToken = authentication as? JwtAuthenticationToken
             ?: throw JwtAuthenticationException("Unsupported authentication type: ${authentication?.javaClass?.name}")
 
-        val token = jwtAuthToken.jwtToken
+        val accessToken = jwtAuthToken.jwtToken
             ?: throw JwtAuthenticationException("JWT token is missing")
 
         val claims: Claims = try {
-            jwtUtil.extractClaims(token)
+            jwtUtil.extractClaimsFromAccessToken(accessToken)
         } catch (e: Exception) {
             throw JwtAuthenticationException("JWT validation failed", e)
         }

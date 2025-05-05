@@ -24,8 +24,10 @@ import javax.crypto.SecretKey
 class JwtAuthenticationProviderTest {
 
     private val secretKey: SecretKey = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS256)
+    private val refreshSecretKey: SecretKey = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS256)
     private val base64Secret: String = Encoders.BASE64.encode(secretKey.encoded)
-    private val jwtUtil = JwtUtil(base64Secret)
+    private val base64RefreshSecret: String = Encoders.BASE64.encode(refreshSecretKey.encoded)
+    private val jwtUtil = JwtUtil(base64Secret, base64RefreshSecret)
 
     private lateinit var userDetailsService: UserDetailsService
     private lateinit var provider: JwtAuthenticationProvider
@@ -37,10 +39,10 @@ class JwtAuthenticationProviderTest {
     }
 
     @Test
-    fun `authenticate - 토큰이 유효하다면 JwtAuthenticationToken을 반환한다`() {
+    fun `authenticate - 엑세스 토큰이 유효하다면 JwtAuthenticationToken을 반환한다`() {
         val username = "testUser"
         val roles = listOf("ROLE_USER")
-        val token = jwtUtil.generateToken(username, roles)
+        val token = jwtUtil.generateAccessToken(username, roles)
         val authToken = JwtAuthenticationToken(token)
         val userDetails: UserDetails = User(username, "", roles.map { SimpleGrantedAuthority(it) })
         every { userDetailsService.loadUserByUsername(username) } returns userDetails

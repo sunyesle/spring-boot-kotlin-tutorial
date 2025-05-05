@@ -20,7 +20,7 @@ class AuthService (
             throw BadCredentialsException("Bad credentials")
         }
 
-        val accessToken = jwtUtil.generateToken(user.username, listOf("ROLE_" + user.role.name))
+        val accessToken = jwtUtil.generateAccessToken(user.username, listOf("ROLE_" + user.role.name))
 
         return TokenResponse(accessToken)
     }
