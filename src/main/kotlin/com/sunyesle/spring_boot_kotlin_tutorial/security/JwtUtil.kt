@@ -24,7 +24,7 @@ class JwtUtil(
     private val secretKey: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret))
     private val refreshSecretKey: SecretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshSecret))
     private val accessTokenParser: JwtParser = Jwts.parser().verifyWith(secretKey).build()
-    private val refreshTokenParser: JwtParser = Jwts.parser().verifyWith(secretKey).build()
+    private val refreshTokenParser: JwtParser = Jwts.parser().verifyWith(refreshSecretKey).build()
 
     fun generateAccessToken(username: String, roles: List<String>): String {
         val now = Instant.now()
