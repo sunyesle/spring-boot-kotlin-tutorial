@@ -13,6 +13,11 @@ class AuthController (
         @RequestBody request: TokenRequest
     ): TokenResponse = authService.generateToken(request)
 
+    @PostMapping("/token/refresh")
+    fun reissueAccessToken(
+        @RequestBody request: RefreshTokenRequest
+    ): AccessTokenResponse = authService.reissueAccessToken(request)
+
     @GetMapping("/test/user")
     fun userEndpoint() {
         println("hello user")

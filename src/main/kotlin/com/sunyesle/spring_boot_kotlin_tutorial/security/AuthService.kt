@@ -1,5 +1,6 @@
 package com.sunyesle.spring_boot_kotlin_tutorial.security
 
+import com.sunyesle.spring_boot_kotlin_tutorial.user.User
 import com.sunyesle.spring_boot_kotlin_tutorial.user.UserRepository
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -21,11 +22,33 @@ class AuthService(
             throw BadCredentialsException("Bad credentials")
         }
 
-        val accessToken = jwtUtil.generateAccessToken(user.username, listOf("ROLE_" + user.role.name))
+        val accessToken = createAccessToken(user)
         val refreshToken = jwtUtil.generateRefreshToken(user.username)
 
         refreshTokenRepository.save(RefreshToken(refreshToken))
 
         return TokenResponse(accessToken, refreshToken)
+    }
+
+    fun reissueAccessToken(request: RefreshTokenRequest): AccessTokenResponse {
+        val username = try {
+            jwtUtil.extractClaimsFromRefreshToken(request.refreshToken).subject
+        } catch (e: Exception) {
+            throw InvalidRefreshTokenException("JWT validation failed", e)
+        }
+
+        val user = userRepository.findByUsername(username)
+            ?: throw InvalidRefreshTokenException("User not found")
+
+        if (!refreshTokenRepository.existsById(request.refreshToken)) {
+            throw InvalidRefreshTokenException("Refresh token not found")
+        }
+
+        val accessToken = createAccessToken(user)
+        return AccessTokenResponse(accessToken)
+    }
+
+    private fun createAccessToken(user: User): String {
+        return jwtUtil.generateAccessToken(user.username, listOf("ROLE_" + user.role.name))
     }
 }

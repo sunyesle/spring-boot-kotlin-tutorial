@@ -59,6 +59,7 @@ class SecurityConfig {
             .headers { it.frameOptions { frame -> frame.sameOrigin() } }
             .authorizeHttpRequests {
                 it.requestMatchers("/api/auth/token").permitAll()
+                it.requestMatchers("/api/auth/token/refresh").permitAll()
                 it.requestMatchers("/api/auth/test/admin").hasRole("ADMIN")
                 it.requestMatchers("/api/auth/test/user").hasRole("USER")
                 it.anyRequest().permitAll()
