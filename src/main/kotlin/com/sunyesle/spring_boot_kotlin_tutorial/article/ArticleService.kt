@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class ArticleService(private val repository: ArticleRepository) {
-    fun findAll() = repository.findAllByOrderByAddedAtDesc()
+    fun findAll() = repository.findAllByOrderByAddedAtDesc().map(ArticleResponse::of)
 
-    fun findBySlug(slug: String) = repository.findBySlug(slug)
+    fun findBySlug(slug: String) = repository.findBySlug(slug)?.let(ArticleResponse::of)
 }
