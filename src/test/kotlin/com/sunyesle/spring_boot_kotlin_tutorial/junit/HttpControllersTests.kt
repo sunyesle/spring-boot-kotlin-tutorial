@@ -4,6 +4,7 @@ import com.ninjasquad.springmockk.MockkBean
 import com.sunyesle.spring_boot_kotlin_tutorial.article.Article
 import com.sunyesle.spring_boot_kotlin_tutorial.article.ArticleController
 import com.sunyesle.spring_boot_kotlin_tutorial.article.ArticleRepository
+import com.sunyesle.spring_boot_kotlin_tutorial.article.ArticleService
 import com.sunyesle.spring_boot_kotlin_tutorial.user.*
 import io.mockk.every
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +24,7 @@ class HttpControllersTests(@Autowired val mockMvc: MockMvc) {
     lateinit var userService: UserService
 
     @MockkBean
-    lateinit var articleRepository: ArticleRepository
+    lateinit var articleService: ArticleService
 
     @Test
     @WithMockUser
@@ -31,7 +32,7 @@ class HttpControllersTests(@Autowired val mockMvc: MockMvc) {
         val johnDoe = User("johnDoe", "password", Role.USER, "John", "Doe")
         val loremArticle = Article("Lorem", "Lorem", "dolor sit amet", johnDoe)
         val ipsumArticle = Article("Ipsum", "Ipsum", "dolor sit amet", johnDoe)
-        every { articleRepository.findAllByOrderByAddedAtDesc() } returns listOf(loremArticle, ipsumArticle)
+        every { articleService.findAll() } returns listOf(loremArticle, ipsumArticle)
 
         mockMvc.perform(get("/api/article").accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)

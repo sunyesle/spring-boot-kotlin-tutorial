@@ -8,11 +8,11 @@ import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/api/article")
-class ArticleController(private val repository: ArticleRepository) {
+class ArticleController(private val service: ArticleService) {
 
     @GetMapping
-    fun findAll() = repository.findAllByOrderByAddedAtDesc()
+    fun findAll() = service.findAll()
 
     @GetMapping("/{slug}")
-    fun findOne(@PathVariable slug: String) = repository.findBySlug(slug) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "This article dose not exist")
+    fun findOne(@PathVariable slug: String) = service.findBySlug(slug) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "This article dose not exist")
 }
