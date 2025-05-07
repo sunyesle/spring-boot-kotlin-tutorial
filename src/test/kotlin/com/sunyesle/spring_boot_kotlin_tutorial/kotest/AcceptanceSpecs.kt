@@ -24,6 +24,8 @@ abstract class AcceptanceSpecs (body: DescribeSpec.() -> Unit) : DescribeSpec(bo
 
     init {
         beforeSpec {
+            RestAssured.reset()
+
             RestAssured.port = port
 
             val logConfig = LogConfig.logConfig()
