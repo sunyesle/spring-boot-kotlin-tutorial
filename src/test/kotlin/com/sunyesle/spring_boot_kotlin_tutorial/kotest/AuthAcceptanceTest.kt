@@ -1,23 +1,36 @@
 package com.sunyesle.spring_boot_kotlin_tutorial.kotest
 
+import com.sunyesle.spring_boot_kotlin_tutorial.common.AcceptanceTest
 import com.sunyesle.spring_boot_kotlin_tutorial.security.RefreshTokenRequest
 import com.sunyesle.spring_boot_kotlin_tutorial.security.TokenRequest
 import com.sunyesle.spring_boot_kotlin_tutorial.user.Role
 import com.sunyesle.spring_boot_kotlin_tutorial.user.User
 import com.sunyesle.spring_boot_kotlin_tutorial.user.UserRepository
-import com.sunyesle.spring_boot_kotlin_tutorial.user.UserSaveRequest
-import io.restassured.RestAssured.requestSpecification
+import io.kotest.core.spec.style.DescribeSpec
 import io.restassured.module.kotlin.extensions.Extract
 import io.restassured.module.kotlin.extensions.Given
 import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When
 import io.restassured.response.Response
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.password.PasswordEncoder
 
-class AuthAcceptanceTest : AcceptanceSpecs({
+@AcceptanceTest
+class AuthAcceptanceTest(
+    val userRepository: UserRepository,
+    val passwordEncoder: PasswordEncoder
+) : DescribeSpec({
+
+    beforeSpec {
+        val user = User(
+            username = "johnDoe",
+            password = passwordEncoder.encode("password"),
+            firstname = "John",
+            lastname = "Doe",
+            role = Role.USER
+        )
+        userRepository.save(user)
+    }
 
     describe("인증 API") {
 
@@ -77,22 +90,24 @@ class AuthAcceptanceTest : AcceptanceSpecs({
                 val accessToken = generateToken(tokenRequest).jsonPath().getString("accessToken")
 
                 Given {
-                    spec(requestSpecification)
                     header("Authorization", "Bearer $accessToken")
+                    log().all()
                 } When {
                     get("/api/auth/test/user")
                 } Then {
                     statusCode(200)
+                    log().all()
                 }
             }
 
             it("토큰 없이 접근하면 401 응답을 반환한다") {
                 Given {
-                    spec(requestSpecification)
+                    log().all()
                 } When {
                     get("/api/auth/test/user")
                 } Then {
                     statusCode(401)
+                    log().all()
                 }
             }
         }
@@ -104,55 +119,38 @@ class AuthAcceptanceTest : AcceptanceSpecs({
                 val accessToken = generateToken(userTokenRequest).jsonPath().getString("accessToken")
 
                 Given {
-                    spec(requestSpecification)
                     header("Authorization", "Bearer $accessToken")
+                    log().all()
                 } When {
                     get("/api/auth/test/admin")
                 } Then {
                     statusCode(403)
+                    log().all()
                 }
             }
 
             it("토큰 없이 접근하면 401 응답을 반환한다") {
                 Given {
-                    spec(requestSpecification)
+                    log().all()
                 } When {
                     get("/api/auth/test/admin")
                 } Then {
                     statusCode(401)
+                    log().all()
                 }
             }
         }
     }
-}) {
-    @Autowired
-    lateinit var userRepository: UserRepository
-
-    @Autowired
-    lateinit var passwordEncoder: PasswordEncoder
-
-    init {
-        beforeSpec {
-            databaseCleanup.execute()
-
-            val user = User(
-                username = "johnDoe",
-                password = passwordEncoder.encode("password"),
-                firstname = "John",
-                lastname = "Doe",
-                role = Role.USER
-            )
-            userRepository.save(user)
-        }
-    }
-}
+})
 
 private fun generateToken(request: TokenRequest): Response {
     return Given {
-        spec(requestSpecification)
         body(request)
+        log().all()
     } When {
         post("/api/auth/token")
+    } Then {
+        log().all()
     } Extract {
         response()
     }
@@ -160,10 +158,12 @@ private fun generateToken(request: TokenRequest): Response {
 
 private fun reissueAccessToken(invalidRequest: RefreshTokenRequest): Response {
     val response = Given {
-        spec(requestSpecification)
         body(invalidRequest)
+        log().all()
     } When {
         post("/api/auth/token/refresh")
+    } Then {
+        log().all()
     } Extract {
         response()
     }

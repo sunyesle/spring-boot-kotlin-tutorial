@@ -1,14 +1,17 @@
 package com.sunyesle.spring_boot_kotlin_tutorial.kotest
 
+import com.sunyesle.spring_boot_kotlin_tutorial.common.AcceptanceTest
 import com.sunyesle.spring_boot_kotlin_tutorial.user.UserSaveRequest
-import io.restassured.RestAssured.requestSpecification
+import io.kotest.core.spec.style.DescribeSpec
 import io.restassured.module.kotlin.extensions.Extract
 import io.restassured.module.kotlin.extensions.Given
+import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When
 import io.restassured.response.Response
 import org.assertj.core.api.Assertions
 
-class UserAcceptanceTest : AcceptanceSpecs({
+@AcceptanceTest
+class UserAcceptanceTest : DescribeSpec({
 
     describe("사용자 API") {
         val request = UserSaveRequest("johnDoe", "password", "John", "Doe")
@@ -60,10 +63,12 @@ class UserAcceptanceTest : AcceptanceSpecs({
 
 private fun saveUser(request: UserSaveRequest): Response {
     return Given {
-        spec(requestSpecification)
         body(request)
+        log().all()
     } When {
         post("/api/user")
+    } Then {
+        log().all()
     } Extract {
         response()
     }
@@ -71,9 +76,11 @@ private fun saveUser(request: UserSaveRequest): Response {
 
 private fun findUsers(): Response {
     return Given {
-        spec(requestSpecification)
+        log().all()
     } When {
         get("/api/user")
+    } Then {
+        log().all()
     } Extract {
         response()
     }
@@ -81,9 +88,11 @@ private fun findUsers(): Response {
 
 private fun findUserByUsername(username: String): Response {
     return Given {
-        spec(requestSpecification)
+        log().all()
     } When {
         get("/api/user/{username}", username)
+    } Then {
+        log().all()
     } Extract {
         response()
     }
