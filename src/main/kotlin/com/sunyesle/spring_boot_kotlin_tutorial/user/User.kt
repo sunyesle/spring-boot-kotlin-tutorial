@@ -1,14 +1,12 @@
 package com.sunyesle.spring_boot_kotlin_tutorial.user
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import jakarta.persistence.*
 
 @Entity
 class User(
     var username: String,
     var password: String,
+    @Enumerated(EnumType.STRING)
     var role: Role,
     var firstname: String,
     var lastname: String,
