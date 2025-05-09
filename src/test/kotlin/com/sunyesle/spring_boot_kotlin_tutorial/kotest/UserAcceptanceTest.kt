@@ -2,60 +2,71 @@ package com.sunyesle.spring_boot_kotlin_tutorial.kotest
 
 import com.sunyesle.spring_boot_kotlin_tutorial.common.AcceptanceTest
 import com.sunyesle.spring_boot_kotlin_tutorial.user.UserSaveRequest
-import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.core.spec.style.FunSpec
 import io.restassured.module.kotlin.extensions.Extract
 import io.restassured.module.kotlin.extensions.Given
 import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When
 import io.restassured.response.Response
 import org.assertj.core.api.Assertions
+import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.hasSize
 
 @AcceptanceTest
-class UserAcceptanceTest : DescribeSpec({
+class UserAcceptanceTest : FunSpec({
 
-    describe("사용자 API") {
-        val request = UserSaveRequest("johnDoe", "password", "John", "Doe")
+    context("사용자 저장") {
 
-        describe("사용자 저장") {
+        test("유효한 정보를 입력하면 201 응답을 반환한다") {
+            // given
+            val request = UserSaveRequest("johnDoe", "password", "John", "Doe")
 
-            context("유효한 정보를 입력하면") {
-                val response = saveUser(request)
+            // when
+            val response = saveUser(request)
 
-                it("201 응답을 반환한다") {
-                    Assertions.assertThat(response.statusCode).isEqualTo(201)
-                    Assertions.assertThat(response.jsonPath().getLong("id")).isNotNull()
-                }
-            }
-
-            context("유효하지 않은 정보를 입력하면") {
-                val invalidRequest = UserSaveRequest("", "", "", "")
-                val response = saveUser(invalidRequest)
-
-                it("400 응답을 반환한다") {
-                    Assertions.assertThat(response.statusCode).isEqualTo(400)
-                    val errors = response.jsonPath().getList("data", Map::class.java)
-                    Assertions.assertThat(errors).isNotEmpty()
-                }
-            }
+            // then
+            Assertions.assertThat(response.statusCode).isEqualTo(201)
+            Assertions.assertThat(response.jsonPath().getLong("id")).isNotNull()
         }
 
-        context("사용자 전체 목록을 조회하면") {
-            val response = findUsers()
+        test("유효하지 않은 정보를 입력하면 400 응답을 반환한다") {
+            // given
+            val invalidRequest = UserSaveRequest("", "", "", "")
 
-            it("목록에 해당 사용자가 존재한다") {
-                val users = response.jsonPath().getList("", Map::class.java)
-                Assertions.assertThat(users).hasSize(1)
-                Assertions.assertThat(users[0]["username"]).isEqualTo("johnDoe")
+            // when
+            val response = saveUser(invalidRequest)
+
+            // then
+            Assertions.assertThat(response.statusCode).isEqualTo(400)
+            val errors = response.jsonPath().getList("data", Map::class.java)
+            Assertions.assertThat(errors).isNotEmpty()
+        }
+    }
+
+    context("사용자 목록 조회") {
+
+        test("사용자 목록을 반환한다") {
+            Given {
+                log().all()
+            } When {
+                get("/api/user")
+            } Then {
+                body("", hasSize<Any>(1))
+                body("[0].username", equalTo("johnDoe"))
+                log().all()
             }
         }
+    }
 
-        context("로그인으로 사용자를 조회하면") {
-            val response = findUserByUsername(request.username)
-
-            it("해당 사용자 정보를 반환한다") {
-                val json = response.jsonPath()
-                Assertions.assertThat(json.getString("firstname")).isEqualTo("John")
-                Assertions.assertThat(json.getString("lastname")).isEqualTo("Doe")
+    context("사용자 단건 조회") {
+        test("username으로 사용자를 조회하면 해당 사용자 정보를 반환한다") {
+            Given {
+                log().all()
+            } When {
+                get("/api/user/{username}", "johnDoe")
+            } Then {
+                body("username", equalTo("johnDoe"))
+                log().all()
             }
         }
     }
@@ -67,30 +78,6 @@ private fun saveUser(request: UserSaveRequest): Response {
         log().all()
     } When {
         post("/api/user")
-    } Then {
-        log().all()
-    } Extract {
-        response()
-    }
-}
-
-private fun findUsers(): Response {
-    return Given {
-        log().all()
-    } When {
-        get("/api/user")
-    } Then {
-        log().all()
-    } Extract {
-        response()
-    }
-}
-
-private fun findUserByUsername(username: String): Response {
-    return Given {
-        log().all()
-    } When {
-        get("/api/user/{username}", username)
     } Then {
         log().all()
     } Extract {

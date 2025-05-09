@@ -7,6 +7,7 @@ import com.sunyesle.spring_boot_kotlin_tutorial.user.Role
 import com.sunyesle.spring_boot_kotlin_tutorial.user.User
 import com.sunyesle.spring_boot_kotlin_tutorial.user.UserRepository
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.core.spec.style.FunSpec
 import io.restassured.module.kotlin.extensions.Extract
 import io.restassured.module.kotlin.extensions.Given
 import io.restassured.module.kotlin.extensions.Then
@@ -19,7 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 class AuthAcceptanceTest(
     val userRepository: UserRepository,
     val passwordEncoder: PasswordEncoder
-) : DescribeSpec({
+) : FunSpec({
 
     beforeSpec {
         val user = User(
@@ -32,112 +33,115 @@ class AuthAcceptanceTest(
         userRepository.save(user)
     }
 
-    describe("인증 API") {
+    context("토큰 발급") {
 
-        describe("토큰 발급") {
+        test("유효한 정보를 입력하면 토큰을 반환한다") {
+            // given
+            val request = TokenRequest("johnDoe", "password")
 
-            context("유효한 정보를 입력하면") {
-                val request = TokenRequest("johnDoe", "password")
-                val response = generateToken(request)
+            // when
+            val response = generateToken(request)
 
-                it("토큰을 반환한다") {
-                    assertThat(response.statusCode).isEqualTo(200)
-                    assertThat(response.jsonPath().getString("accessToken")).isNotNull()
-                    assertThat(response.jsonPath().getString("refreshToken")).isNotNull()
-                }
-            }
+            // then
+            assertThat(response.statusCode).isEqualTo(200)
+            assertThat(response.jsonPath().getString("accessToken")).isNotNull()
+            assertThat(response.jsonPath().getString("refreshToken")).isNotNull()
+        }
 
-            context("유효하지 않은 정보를 입력하면") {
-                val invalidRequest = TokenRequest("null", "null")
-                val response = generateToken(invalidRequest)
+        test("유효하지 않은 정보를 입력하면 401 응답을 반환한다") {
+            // given
+            val invalidRequest = TokenRequest("null", "null")
 
-                it("401 응답을 반환한다") {
-                    assertThat(response.statusCode).isEqualTo(401)
-                }
+            // when
+            val response = generateToken(invalidRequest)
+
+            // then
+            assertThat(response.statusCode).isEqualTo(401)
+        }
+    }
+
+    context("액세스 토큰 재발급") {
+
+        test("유효한 리프레시 토큰을 입력하면 액세스 토큰을 반환한다") {
+            // given
+            val tokenRequest = TokenRequest("johnDoe", "password")
+            val refreshToken = generateToken(tokenRequest).jsonPath().getString("refreshToken")
+            val request = RefreshTokenRequest(refreshToken)
+
+            // when
+            val response = reissueAccessToken(request)
+
+            // then
+            assertThat(response.statusCode).isEqualTo(200)
+            assertThat(response.jsonPath().getString("accessToken")).isNotNull()
+        }
+
+        test("유효하지 않은 리프레시 토큰을 입력하면 401 응답을 반환한다") {
+            // given
+            val invalidRequest = RefreshTokenRequest("null")
+
+            // when
+            val response = reissueAccessToken(invalidRequest)
+
+            // then
+            assertThat(response.statusCode).isEqualTo(401)
+        }
+    }
+
+    context("USER 권한이 필요한 API") {
+
+        test("USER 권한으로 접근할 수 있다") {
+            val tokenRequest = TokenRequest("johnDoe", "password")
+            val accessToken = generateToken(tokenRequest).jsonPath().getString("accessToken")
+
+            Given {
+                header("Authorization", "Bearer $accessToken")
+                log().all()
+            } When {
+                get("/api/auth/test/user")
+            } Then {
+                statusCode(200)
+                log().all()
             }
         }
 
-        describe("액세스 토큰 재발급") {
-
-            context("유효한 리프레시 토큰을 입력하면") {
-                val tokenRequest = TokenRequest("johnDoe", "password")
-                val refreshToken = generateToken(tokenRequest).jsonPath().getString("refreshToken")
-                val request = RefreshTokenRequest(refreshToken)
-
-                val response = reissueAccessToken(request)
-
-                it("액세스 토큰을 반환한다") {
-                    assertThat(response.statusCode).isEqualTo(200)
-                    assertThat(response.jsonPath().getString("accessToken")).isNotNull()
-                }
+        test("토큰 없이 접근하면 401 응답을 반환한다") {
+            Given {
+                log().all()
+            } When {
+                get("/api/auth/test/user")
+            } Then {
+                statusCode(401)
+                log().all()
             }
+        }
+    }
 
-            context("유효하지 않은 리프레시 토큰을 입력하면") {
-                val invalidRequest = RefreshTokenRequest("null")
+    context("ADMIN 권한이 필요한 API") {
 
-                val response = reissueAccessToken(invalidRequest)
+        test("USER 권한으로 접근하면 403 응답을 반환한다") {
+            val userTokenRequest = TokenRequest("johnDoe", "password")
+            val accessToken = generateToken(userTokenRequest).jsonPath().getString("accessToken")
 
-                it("401 응답을 반환한다") {
-                    assertThat(response.statusCode).isEqualTo(401)
-                }
+            Given {
+                header("Authorization", "Bearer $accessToken")
+                log().all()
+            } When {
+                get("/api/auth/test/admin")
+            } Then {
+                statusCode(403)
+                log().all()
             }
         }
 
-        describe("USER 권한이 필요한 API") {
-
-            it("USER 권한으로 접근할 수 있다") {
-                val tokenRequest = TokenRequest("johnDoe", "password")
-                val accessToken = generateToken(tokenRequest).jsonPath().getString("accessToken")
-
-                Given {
-                    header("Authorization", "Bearer $accessToken")
-                    log().all()
-                } When {
-                    get("/api/auth/test/user")
-                } Then {
-                    statusCode(200)
-                    log().all()
-                }
-            }
-
-            it("토큰 없이 접근하면 401 응답을 반환한다") {
-                Given {
-                    log().all()
-                } When {
-                    get("/api/auth/test/user")
-                } Then {
-                    statusCode(401)
-                    log().all()
-                }
-            }
-        }
-
-        describe("ADMIN 권한이 필요한 API") {
-
-            it("USER 권한으로 접근하면 403 응답을 반환한다") {
-                val userTokenRequest = TokenRequest("johnDoe", "password")
-                val accessToken = generateToken(userTokenRequest).jsonPath().getString("accessToken")
-
-                Given {
-                    header("Authorization", "Bearer $accessToken")
-                    log().all()
-                } When {
-                    get("/api/auth/test/admin")
-                } Then {
-                    statusCode(403)
-                    log().all()
-                }
-            }
-
-            it("토큰 없이 접근하면 401 응답을 반환한다") {
-                Given {
-                    log().all()
-                } When {
-                    get("/api/auth/test/admin")
-                } Then {
-                    statusCode(401)
-                    log().all()
-                }
+        test("토큰 없이 접근하면 401 응답을 반환한다") {
+            Given {
+                log().all()
+            } When {
+                get("/api/auth/test/admin")
+            } Then {
+                statusCode(401)
+                log().all()
             }
         }
     }
