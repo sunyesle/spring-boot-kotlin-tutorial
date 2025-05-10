@@ -39,7 +39,7 @@ class JwtAuthenticationProviderTest {
     }
 
     @Test
-    fun `authenticate - 엑세스 토큰이 유효하다면 JwtAuthenticationToken을 반환한다`() {
+    fun `authenticate - 액세스 토큰이 유효하다면 JwtAuthenticationToken을 반환한다`() {
         val username = "testUser"
         val roles = listOf("ROLE_USER")
         val token = jwtUtil.generateAccessToken(username, roles)

@@ -19,7 +19,7 @@ class JwtUtilTest {
     private val jwtUtil = JwtUtil(base64Secret, base64RefreshSecret)
 
     @Test
-    fun `generateAccessToken - 엑세스 토큰을 생성한다`() {
+    fun `generateAccessToken - 액세스 토큰을 생성한다`() {
         val userId = "testUser"
         val roles = listOf("ROLE_USER")
         val token = jwtUtil.generateAccessToken(userId, roles)
@@ -34,7 +34,7 @@ class JwtUtilTest {
     }
 
     @Test
-    fun `extractClaimsFromAccessToken - 유효하지 않은 엑세스 토큰이 주어질 경우 예외가 발생한다`() {
+    fun `extractClaimsFromAccessToken - 유효하지 않은 액세스 토큰이 주어질 경우 예외가 발생한다`() {
         val invalidToken = "invalid token"
 
         assertThatThrownBy { jwtUtil.extractClaimsFromAccessToken(invalidToken) }
