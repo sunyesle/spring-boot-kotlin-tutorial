@@ -15,7 +15,7 @@ class BlogConfiguration(
     private val passwordEncoder: PasswordEncoder
 ) {
 
-    @Bean
+    //@Bean
     fun databaseInitializer(
         userRepository: UserRepository,
         articleRepository: ArticleRepository
