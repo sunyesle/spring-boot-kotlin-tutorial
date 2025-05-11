@@ -9,6 +9,7 @@ import io.restassured.filter.log.RequestLoggingFilter
 import io.restassured.filter.log.ResponseLoggingFilter
 import io.restassured.http.ContentType
 import io.restassured.specification.RequestSpecification
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -40,7 +41,10 @@ abstract class BaseAcceptanceTest {
             .addFilter(RequestLoggingFilter())
             .addFilter(ResponseLoggingFilter())
             .build()
+    }
 
+    @AfterAll
+    fun afterAll() {
         databaseCleanup.execute()
     }
 }

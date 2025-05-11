@@ -11,8 +11,10 @@ import io.restassured.response.Response
 import org.assertj.core.api.Assertions
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.hasSize
+import org.springframework.test.context.jdbc.Sql
 
 @AcceptanceTest
+@Sql(scripts = ["classpath:acceptance/user.sql"])
 class UserAcceptanceTest : FunSpec({
 
     context("사용자 저장") {

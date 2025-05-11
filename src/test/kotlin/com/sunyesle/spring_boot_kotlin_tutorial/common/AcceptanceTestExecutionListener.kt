@@ -26,7 +26,9 @@ class AcceptanceTestExecutionListener : AbstractTestExecutionListener() {
             .setContentType(ContentType.JSON)
             .setConfig(config)
             .build()
+    }
 
+    override fun afterTestMethod(testContext: TestContext) {
         // DB 데이터 초기화
         val databaseCleanup = testContext.applicationContext.getBean(DatabaseCleanup::class.java)
 

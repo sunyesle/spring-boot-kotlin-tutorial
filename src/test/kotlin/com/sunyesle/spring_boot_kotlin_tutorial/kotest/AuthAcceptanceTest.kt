@@ -3,10 +3,6 @@ package com.sunyesle.spring_boot_kotlin_tutorial.kotest
 import com.sunyesle.spring_boot_kotlin_tutorial.common.AcceptanceTest
 import com.sunyesle.spring_boot_kotlin_tutorial.security.RefreshTokenRequest
 import com.sunyesle.spring_boot_kotlin_tutorial.security.TokenRequest
-import com.sunyesle.spring_boot_kotlin_tutorial.user.Role
-import com.sunyesle.spring_boot_kotlin_tutorial.user.User
-import com.sunyesle.spring_boot_kotlin_tutorial.user.UserRepository
-import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.core.spec.style.FunSpec
 import io.restassured.module.kotlin.extensions.Extract
 import io.restassured.module.kotlin.extensions.Given
@@ -14,24 +10,11 @@ import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When
 import io.restassured.response.Response
 import org.assertj.core.api.Assertions.assertThat
-import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.test.context.jdbc.Sql
 
 @AcceptanceTest
-class AuthAcceptanceTest(
-    val userRepository: UserRepository,
-    val passwordEncoder: PasswordEncoder
-) : FunSpec({
-
-    beforeSpec {
-        val user = User(
-            username = "johnDoe",
-            password = passwordEncoder.encode("password"),
-            firstname = "John",
-            lastname = "Doe",
-            role = Role.USER
-        )
-        userRepository.save(user)
-    }
+@Sql(scripts = ["classpath:acceptance/user.sql"])
+class AuthAcceptanceTest : FunSpec({
 
     context("토큰 발급") {
 
@@ -50,7 +33,7 @@ class AuthAcceptanceTest(
 
         test("유효하지 않은 정보를 입력하면 401 응답을 반환한다") {
             // given
-            val invalidRequest = TokenRequest("null", "null")
+            val invalidRequest = TokenRequest("invalidUsername", "invalidPassword")
 
             // when
             val response = generateToken(invalidRequest)
@@ -78,7 +61,7 @@ class AuthAcceptanceTest(
 
         test("유효하지 않은 리프레시 토큰을 입력하면 401 응답을 반환한다") {
             // given
-            val invalidRequest = RefreshTokenRequest("null")
+            val invalidRequest = RefreshTokenRequest("invalidRefreshToken")
 
             // when
             val response = reissueAccessToken(invalidRequest)
