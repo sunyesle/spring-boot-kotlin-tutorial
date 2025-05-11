@@ -13,6 +13,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 class ExceptionHandler {
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
+    @ExceptionHandler(NotFoundException::class)
+    fun handleNotFoundException(e: NotFoundException): ResponseEntity<ErrorResponse<Nothing>> {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+            ErrorResponse(code = "NOT_FOUND", message = "요청한 리소스를 찾을 수 없습니다.")
+        )
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<ErrorResponse<List<FieldErrorDto>>> {
         val allErrors = e.bindingResult.fieldErrors.map {
