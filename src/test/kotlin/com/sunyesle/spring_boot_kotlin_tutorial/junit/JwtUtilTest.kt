@@ -16,7 +16,7 @@ class JwtUtilTest {
     private val base64Secret: String = Encoders.BASE64.encode(secretKey.encoded)
     private val base64RefreshSecret: String = Encoders.BASE64.encode(refreshSecretKey.encoded)
 
-    private val jwtUtil = JwtUtil(base64Secret, base64RefreshSecret)
+    private val jwtUtil = JwtUtil(base64Secret, base64RefreshSecret, 60, 600)
 
     @Test
     fun `generateAccessToken - 액세스 토큰을 생성한다`() {

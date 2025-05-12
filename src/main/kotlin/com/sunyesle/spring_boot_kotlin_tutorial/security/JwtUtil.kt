@@ -15,7 +15,9 @@ import javax.crypto.SecretKey
 @Component
 class JwtUtil(
     @Value("\${jwt.secret}") secret: String,
-    @Value("\${jwt.refresh-secret}") refreshSecret: String
+    @Value("\${jwt.refresh-secret}") refreshSecret: String,
+    @Value("\${jwt.expire-min}") val expireMin: Long,
+    @Value("\${jwt.refresh-expire-min}") val refreshExpireMin: Long
 ) {
     companion object {
         const val CLAIM_KEY_ROLES = "roles"
@@ -28,7 +30,7 @@ class JwtUtil(
 
     fun generateAccessToken(username: String, roles: List<String>): String {
         val now = Instant.now()
-        val expiryDate = now.plus(Duration.ofMillis(3600000))
+        val expiryDate = now.plus(Duration.ofMinutes(expireMin))
 
         return Jwts.builder()
             .subject(username)
@@ -41,7 +43,7 @@ class JwtUtil(
 
     fun generateRefreshToken(username: String): String {
         val now = Instant.now()
-        val expiryDate = now.plus(Duration.ofMillis(36000000))
+        val expiryDate = now.plus(Duration.ofMinutes(refreshExpireMin))
 
         return Jwts.builder()
             .subject(username)

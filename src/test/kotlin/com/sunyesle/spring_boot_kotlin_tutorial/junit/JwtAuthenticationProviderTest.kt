@@ -27,7 +27,7 @@ class JwtAuthenticationProviderTest {
     private val refreshSecretKey: SecretKey = Keys.secretKeyFor(io.jsonwebtoken.SignatureAlgorithm.HS256)
     private val base64Secret: String = Encoders.BASE64.encode(secretKey.encoded)
     private val base64RefreshSecret: String = Encoders.BASE64.encode(refreshSecretKey.encoded)
-    private val jwtUtil = JwtUtil(base64Secret, base64RefreshSecret)
+    private val jwtUtil = JwtUtil(base64Secret, base64RefreshSecret, 60, 600)
 
     private lateinit var userDetailsService: UserDetailsService
     private lateinit var provider: JwtAuthenticationProvider

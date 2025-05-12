@@ -9,6 +9,8 @@ spring:
 jwt:
   secret: SecretKeySecretKeySecretKeySecretKeySecretKey
   refresh-secret: RefreshSecretKeyRefreshSecretKeyRefreshSecretKey
+  expire-min: 60
+  refresh-expire-min: 600
 blog:
   title: Blog
   banner:
